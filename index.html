@@ -1370,6 +1370,40 @@
                 🚗 Ouvrir dans Waze
             </a>
         </div>
+		
+        <!-- Plan du lieu -->
+        <div class="plan-lieu fade-in" style="margin-top: 3rem;">
+            <h3 style="font-family: 'Josefin Sans', sans-serif; font-size: 1.5rem; color: var(--vert-foret); text-align: center; margin-bottom: 1.5rem;">🗺️ Plan du lieu</h3>
+            <div style="background: var(--blanc-casse); border: 2px dashed var(--vert-mousse); border-radius: 20px; padding: 2rem; text-align: center;">
+                <div style="background: var(--creme-fonce); border-radius: 15px; padding: 3rem; margin-bottom: 1.5rem;">
+                    <!-- <p style="color: var(--brun-terre); font-style: italic;">🗺️ Plan à venir...</p>-->
+                    <!-- EMPLACEMENT POUR LE PLAN : remplacer ce bloc par une image -->
+                    <img src="images/plan-lieu.png" alt="Plan du lieu" style="max-width: 100%; border-radius: 10px;"> 
+                </div>
+<!--                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">🎉</span>
+                        <span>Réception</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">⛺</span>
+                        <span>Camping</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">🚗</span>
+                        <span>Parking</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">🚻</span>
+                        <span>Commodités</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">🔥</span>
+                        <span>Barbecue</span>
+                    </div>
+                </div>-->
+            </div>
+        </div>
     </section>
 
     <!-- Inscription -->
@@ -1378,10 +1412,10 @@
         
         <div class="form-container">
             <form id="rsvp-form" action="https://formsubmit.co/therealcowkiller@gmail.com" method="POST">
+			<!-- <form id="rsvp-form" action="https://formsubmit.co/alix.tran@gmail.com" method="POST">-->		
                 <!-- Configuration FormSubmit -->
                 <input type="hidden" name="_subject" value="🎉 Nouvelle inscription - 10 ans de mariage !">
-                <input type="hidden" name="_cc" value="alix.tran@gmail.com">
-				<input type="hidden" name="_cc" value="julien.tuvache@gmail.com">
+                <!-- <input type="hidden" name="_cc" value="therealcowkiller@gmail.com">-->
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_next" value="">
@@ -1689,7 +1723,7 @@
             
             // Google Sheets API (pour la jauge de réponses)
             // Format: https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/gviz/tq?tqx=out:json
-            GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/1xOgKsgV4pBd-UwbPzwJhsKRS3eI9F_OQRdXSQBq67u0/edit?usp=drivesdk', // TODO: Ajouter l'URL de ton Google Sheet
+            GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/1xOgKsgV4pBd-UwbPzwJhsKRS3eI9F_OQRdXSQBq67u0/gviz/tq?tqx=out:json', // TODO: Ajouter l'URL de ton Google Sheet
             
             // Nombre total de réponses attendues
             TOTAL_EXPECTED_RESPONSES: 100,
