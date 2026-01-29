@@ -2086,7 +2086,7 @@
             document.body.style.overflow = '';
         }
 
-        function showPrevPhoto() {
+        /*function showPrevPhoto() {
             currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
             lightboxImg.src = photos[currentPhotoIndex].src;
         }
@@ -2094,7 +2094,26 @@
         function showNextPhoto() {
             currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
             lightboxImg.src = photos[currentPhotoIndex].src;
-        }
+        }*/
+		
+		function getFullUrl(src) {
+			let fullUrl = src.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
+			if (fullUrl.includes('ucarecd.net') && !fullUrl.includes('-/')) {
+				fullUrl = fullUrl.replace(/\/$/, '');
+				fullUrl += '/-/preview/1000x1000/';
+			}
+			return fullUrl;
+		}
+
+		function showPrevPhoto() {
+			currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+			lightboxImg.src = getFullUrl(photos[currentPhotoIndex].src);
+		}
+
+		function showNextPhoto() {
+			currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+			lightboxImg.src = getFullUrl(photos[currentPhotoIndex].src);
+		}		
 
         lightboxClose.addEventListener('click', closeLightbox);
         lightboxPrev.addEventListener('click', showPrevPhoto);
