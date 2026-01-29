@@ -1980,8 +1980,8 @@
 
 			galleryEmpty.style.display = 'none';
 
-			/*photos.forEach((photo, index) => {
-				// Construire l'URL de la miniature Uploadcare
+			photos.forEach((photo, index) => {
+				/*// Construire l'URL de la miniature Uploadcare
 				let thumbUrl = photo.thumb || photo.src;
 				
 				// Si c'est une URL Uploadcare sans transformation, ajouter le redimensionnement
@@ -2008,40 +2008,41 @@
 					</div>
 				`;
 				item.addEventListener('click', () => openLightbox(index, fullUrl));
-				galleryGrid.appendChild(item);
-			});
-		}*/
-		photos.forEach((photo, index) => {
-			// Construire l'URL avec le bon CDN
-			let thumbUrl = photo.thumb || photo.src;
-			let fullUrl = photo.src;
-			
-			// Remplacer ucarecdn.com par le CDN personnalisé
-			thumbUrl = thumbUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
-			fullUrl = fullUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
-			
-			// Ajouter les transformations Uploadcare si pas présentes
-			if (thumbUrl.includes('ucarecd.net') && !thumbUrl.includes('-/')) {
-				thumbUrl = thumbUrl.replace(/\/$/, '');
-				thumbUrl += '/-/preview/400x400/';
-			}
-			
-			if (fullUrl.includes('ucarecd.net') && !fullUrl.includes('-/')) {
-				fullUrl = fullUrl.replace(/\/$/, '');
-				fullUrl += '/-/preview/1000x1000/';
-			}
+				galleryGrid.appendChild(item);*/
 
-			const item = document.createElement('div');
-			item.className = 'gallery-item';
-			item.innerHTML = `
-				<img src="${thumbUrl}" alt="${photo.name || 'Photo'}" loading="lazy" onerror="this.src='${fullUrl}'">
-				<div class="gallery-item-overlay">
-					${photo.date || ''}
-				</div>
-			`;
-			item.addEventListener('click', () => openLightbox(index, fullUrl));
-			galleryGrid.appendChild(item);
-		});		
+				// Construire l'URL avec le bon CDN
+				let thumbUrl = photo.thumb || photo.src;
+				let fullUrl = photo.src;
+				
+				// Remplacer ucarecdn.com par le CDN personnalisé
+				thumbUrl = thumbUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
+				fullUrl = fullUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
+				
+				// Ajouter les transformations Uploadcare si pas présentes
+				if (thumbUrl.includes('ucarecd.net') && !thumbUrl.includes('-/')) {
+					thumbUrl = thumbUrl.replace(/\/$/, '');
+					thumbUrl += '/-/preview/400x400/';
+				}
+				
+				if (fullUrl.includes('ucarecd.net') && !fullUrl.includes('-/')) {
+					fullUrl = fullUrl.replace(/\/$/, '');
+					fullUrl += '/-/preview/1000x1000/';
+				}
+
+				const item = document.createElement('div');
+				item.className = 'gallery-item';
+				item.innerHTML = `
+					<img src="${thumbUrl}" alt="${photo.name || 'Photo'}" loading="lazy" onerror="this.src='${fullUrl}'">
+					<div class="gallery-item-overlay">
+						${photo.date || ''}
+					</div>
+				`;
+				item.addEventListener('click', () => openLightbox(index, fullUrl));
+				galleryGrid.appendChild(item);				
+				
+			});
+		}
+
 
         // Initialiser la galerie
         //renderGallery();
