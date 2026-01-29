@@ -1739,6 +1739,9 @@
             
             // Stockage local pour les photos (en attendant l'intégration complète)
             PHOTOS_STORAGE_KEY: 'mariage_photos'
+			
+			PHOTOS_SHEET_URL: 'https://docs.google.com/spreadsheets/d/1iymkr8gwOfSExd_tV2PeUoJWQM08k7iMac5zJjd_ag8/gviz/tq?tqx=out:json&sheet=Feuille1',
+			PHOTOS_WEBHOOK_URL: 'https://hook.us2.make.com/m426q7ycxgyt3yexmvbe6f4lpsdxi3y3'			
         };
 
         // ============================================
@@ -1907,7 +1910,8 @@
             handleFiles(e.target.files);
         });
 
-        function handleFiles(files) {
+
+        /*function handleFiles(files) {
             if (files.length === 0) return;
 
             uploadProgress.classList.add('active');
@@ -1949,7 +1953,65 @@
                 };
                 reader.readAsDataURL(file);
             });
-        }
+        }*/
+
+		function handleFiles(files) {
+			if (files.length === 0) return;
+
+			uploadProgress.classList.add('active');
+			let uploaded = 0;
+			const total = files.length;
+
+			Array.from(files).forEach((file, index) => {
+				if (!file.type.startsWith('image/')) {
+					showToast('Seules les images sont acceptées', 'error');
+					return;
+				}
+
+				// Upload vers Uploadcare
+				const formData = new FormData();
+				formData.append('UPLOADCARE_PUB_KEY', CONFIG.UPLOADCARE_PUBLIC_KEY);
+				formData.append('UPLOADCARE_STORE', '1');
+				formData.append('file', file);
+
+				fetch('https://upload.uploadcare.com/base/', {
+					method: 'POST',
+					body: formData
+				})
+				.then(response => response.json())
+				.then(data => {
+					const photo = {
+						id: data.file,
+						src: `https://ucarecdn.com/${data.file}/`,
+						thumb: `https://ucarecdn.com/${data.file}/-/resize/400x400/-/quality/smart/`,
+						name: file.name,
+						date: new Date().toLocaleDateString('fr-FR')
+					};
+
+					// Sauvegarder dans un Google Sheet ou localStorage pour la liste
+					savePhotoReference(photo);
+
+					uploaded++;
+					const progress = (uploaded / total) * 100;
+					uploadProgressFill.style.width = progress + '%';
+					uploadStatus.textContent = `Upload: ${uploaded}/${total} photos`;
+
+					if (uploaded === total) {
+						setTimeout(() => {
+							uploadProgress.classList.remove('active');
+							uploadProgressFill.style.width = '0%';
+							showToast(`${total} photo(s) uploadée(s) !`, 'success');
+							loadPhotos();
+						}, 500);
+					}
+				})
+				.catch(error => {
+					console.error('Erreur upload:', error);
+					showToast('Erreur lors de l\'upload', 'error');
+				});
+			});
+		}
+
 
         function renderGallery() {
             if (photos.length === 0) {
@@ -2063,6 +2125,58 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+		
+		// ============================================
+		// STOCKAGE DES RÉFÉRENCES PHOTOS (Google Sheet)
+		// ============================================
+
+		// URL du webhook Make pour ajouter une photo
+		const PHOTOS_WEBHOOK_URL = 'https://hook.us2.make.com/m426q7ycxgyt3yexmvbe6f4lpsdxi3y3'; // TODO: Créer un webhook Make pour les photos
+
+		async function savePhotoReference(photo) {
+			if (!PHOTOS_WEBHOOK_URL) {
+				// Fallback localStorage si pas de webhook
+				photos.push(photo);
+				localStorage.setItem(CONFIG.PHOTOS_STORAGE_KEY, JSON.stringify(photos));
+				return;
+			}
+
+			try {
+				await fetch(PHOTOS_WEBHOOK_URL, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(photo)
+				});
+			} catch (error) {
+				console.error('Erreur sauvegarde référence:', error);
+			}
+		}
+
+		async function loadPhotos() {
+			// Si tu as configuré un Google Sheet pour les photos
+			if (CONFIG.PHOTOS_SHEET_URL) {
+				try {
+					const response = await fetch(CONFIG.PHOTOS_SHEET_URL);
+					const text = await response.text();
+					const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+					
+					if (jsonString && jsonString[1]) {
+						const json = JSON.parse(jsonString[1]);
+						photos = json.table.rows.map(row => ({
+							id: row.c[0]?.v || '',
+							src: row.c[1]?.v || '',
+							thumb: row.c[2]?.v || '',
+							name: row.c[3]?.v || '',
+							date: row.c[4]?.v || ''
+						}));
+					}
+				} catch (error) {
+					console.error('Erreur chargement photos:', error);
+				}
+			}
+			
+			renderGallery();
+		}		
     </script>
 </body>
 </html>
