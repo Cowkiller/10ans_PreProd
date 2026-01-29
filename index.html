@@ -1877,7 +1877,8 @@
         const galleryEmpty = document.getElementById('gallery-empty');
 
         // Stockage local des photos (pour la démo)
-        let photos = JSON.parse(localStorage.getItem(CONFIG.PHOTOS_STORAGE_KEY) || '[]');
+        //let photos = JSON.parse(localStorage.getItem(CONFIG.PHOTOS_STORAGE_KEY) || '[]');
+		let photos = [];
 
         // Événements pour l'upload
         uploadBtn.addEventListener('click', (e) => {
@@ -2040,7 +2041,10 @@
         }
 
         // Initialiser la galerie
-        renderGallery();
+        //renderGallery();
+		
+		// Initialiser la galerie (charger depuis Google Sheets)
+		loadPhotos();
 
         // ============================================
         // LIGHTBOX
