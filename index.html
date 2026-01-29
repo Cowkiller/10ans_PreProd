@@ -2014,7 +2014,7 @@
 		}
 
 
-        function renderGallery() {
+        /*function renderGallery() {
             if (photos.length === 0) {
                 galleryEmpty.style.display = 'block';
                 return;
@@ -2038,7 +2038,50 @@
                 item.addEventListener('click', () => openLightbox(index));
                 galleryGrid.appendChild(item);
             });
-        }
+        }*/
+		
+		function renderGallery() {
+			// Vider les anciennes photos
+			const existingItems = galleryGrid.querySelectorAll('.gallery-item');
+			existingItems.forEach(item => item.remove());
+
+			if (photos.length === 0) {
+				galleryEmpty.style.display = 'block';
+				return;
+			}
+
+			galleryEmpty.style.display = 'none';
+
+			photos.forEach((photo, index) => {
+				// Construire l'URL de la miniature Uploadcare
+				let thumbUrl = photo.thumb || photo.src;
+				
+				// Si c'est une URL Uploadcare sans transformation, ajouter le redimensionnement
+				if (thumbUrl.includes('ucarecdn.com') && !thumbUrl.includes('-/')) {
+					// Enlever le slash final si présent
+					thumbUrl = thumbUrl.replace(/\/$/, '');
+					thumbUrl += '/-/resize/400x400/-/quality/smart/';
+				}
+
+				// URL full size pour la lightbox
+				let fullUrl = photo.src;
+				if (fullUrl.includes('ucarecdn.com') && !fullUrl.includes('-/')) {
+					fullUrl = fullUrl.replace(/\/$/, '');
+					fullUrl += '/-/quality/smart/';
+				}
+
+				const item = document.createElement('div');
+				item.className = 'gallery-item';
+				item.innerHTML = `
+					<img src="${thumbUrl}" alt="${photo.name || 'Photo'}" loading="lazy" onerror="this.src='${photo.src}'">
+					<div class="gallery-item-overlay">
+						${photo.date || ''}
+					</div>
+				`;
+				item.addEventListener('click', () => openLightbox(index, fullUrl));
+				galleryGrid.appendChild(item);
+			});
+		}		
 
         // Initialiser la galerie
         //renderGallery();
@@ -2056,12 +2099,26 @@
         const lightboxNext = document.getElementById('lightbox-next');
         let currentPhotoIndex = 0;
 
-        function openLightbox(index) {
+        /*function openLightbox(index) {
             currentPhotoIndex = index;
             lightboxImg.src = photos[index].src;
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
-        }
+        }*/
+		
+		function openLightbox(index, fullUrl) {
+			currentPhotoIndex = index;
+			
+			// Utiliser l'URL fournie ou construire depuis photos[index]
+			let imgUrl = fullUrl || photos[index].src;
+			if (imgUrl.includes('ucarecdn.com') && !imgUrl.includes('-/')) {
+				imgUrl = imgUrl.replace(/\/$/, '') + '/-/quality/smart/';
+			}
+			
+			lightboxImg.src = imgUrl;
+			lightbox.classList.add('active');
+			document.body.style.overflow = 'hidden';
+		}
 
         function closeLightbox() {
             lightbox.classList.remove('active');
