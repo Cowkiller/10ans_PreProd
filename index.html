@@ -1398,28 +1398,6 @@
                     <img src="images/plan-lieu.png" alt="Plan du lieu" style="max-width: 100%; border-radius: 10px;" onclick="openPlanLightbox()"> 
 					<p class="plan-caption">👆 Cliquez pour agrandir</p>
                 </div>				
-<!--                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem;">🎉</span>
-                        <span>Réception</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem;">⛺</span>
-                        <span>Camping</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem;">🚗</span>
-                        <span>Parking</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem;">🚻</span>
-                        <span>Commodités</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem;">🔥</span>
-                        <span>Barbecue</span>
-                    </div>
-                </div>-->
             </div>
         </div>
     </section>
@@ -1788,28 +1766,6 @@
         // ============================================
         // JAUGE DE RÉPONSES
         // ============================================
-        /*async function updateResponseCount() {
-            // Si pas de Google Sheets configuré, utiliser une valeur de démo
-            if (!CONFIG.GOOGLE_SHEETS_URL) {
-                // Valeur de démonstration
-                const demoCount = 12; // À remplacer dynamiquement
-                updateProgressBar(demoCount);
-                return;
-            }
-
-            try {
-                const response = await fetch(CONFIG.GOOGLE_SHEETS_URL);
-                const text = await response.text();
-                // Parser la réponse Google Sheets
-                const json = JSON.parse(text.substring(47).slice(0, -2));
-                const rowCount = json.table.rows.length;
-                updateProgressBar(rowCount);
-            } catch (error) {
-                console.log('Erreur lors de la récupération des réponses:', error);
-                // Fallback: afficher 0
-                updateProgressBar(0);
-            }
-        }*/
 		async function updateResponseCount() {
 			if (!CONFIG.GOOGLE_SHEETS_URL) {
 				updateProgressBar(0);
@@ -1928,51 +1884,6 @@
             handleFiles(e.target.files);
         });
 
-
-        /*function handleFiles(files) {
-            if (files.length === 0) return;
-
-            uploadProgress.classList.add('active');
-            let uploaded = 0;
-            const total = files.length;
-
-            Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) {
-                    showToast('Seules les images sont acceptées', 'error');
-                    return;
-                }
-
-                // Simuler un upload (en réalité, utiliser Uploadcare)
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const photo = {
-                        id: Date.now() + index,
-                        src: e.target.result,
-                        name: file.name,
-                        date: new Date().toLocaleDateString('fr-FR')
-                    };
-                    
-                    photos.push(photo);
-                    localStorage.setItem(CONFIG.PHOTOS_STORAGE_KEY, JSON.stringify(photos));
-                    
-                    uploaded++;
-                    const progress = (uploaded / total) * 100;
-                    uploadProgressFill.style.width = progress + '%';
-                    uploadStatus.textContent = `Upload: ${uploaded}/${total} photos`;
-
-                    if (uploaded === total) {
-                        setTimeout(() => {
-                            uploadProgress.classList.remove('active');
-                            uploadProgressFill.style.width = '0%';
-                            showToast(`${total} photo(s) ajoutée(s) !`, 'success');
-                            renderGallery();
-                        }, 500);
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-        }*/
-
 		function handleFiles(files) {
 			if (files.length === 0) return;
 
@@ -2069,12 +1980,13 @@
 
 			galleryEmpty.style.display = 'none';
 
-			photos.forEach((photo, index) => {
+			/*photos.forEach((photo, index) => {
 				// Construire l'URL de la miniature Uploadcare
 				let thumbUrl = photo.thumb || photo.src;
 				
 				// Si c'est une URL Uploadcare sans transformation, ajouter le redimensionnement
-				if (thumbUrl.includes('ucarecdn.com') && !thumbUrl.includes('-/')) {
+				//if (thumbUrl.includes('ucarecdn.com') && !thumbUrl.includes('-/')) {
+				if ((fullUrl.includes('ucarecdn.com') || fullUrl.includes('ucarecd.net')) && !fullUrl.includes('-/')) {
 					// Enlever le slash final si présent
 					thumbUrl = thumbUrl.replace(/\/$/, '');
 					thumbUrl += '/-/resize/400x400/-/quality/smart/';
@@ -2098,7 +2010,38 @@
 				item.addEventListener('click', () => openLightbox(index, fullUrl));
 				galleryGrid.appendChild(item);
 			});
-		}		
+		}*/
+		photos.forEach((photo, index) => {
+			// Construire l'URL avec le bon CDN
+			let thumbUrl = photo.thumb || photo.src;
+			let fullUrl = photo.src;
+			
+			// Remplacer ucarecdn.com par le CDN personnalisé
+			thumbUrl = thumbUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
+			fullUrl = fullUrl.replace('ucarecdn.com', '32fv4s4e9l.ucarecd.net');
+			
+			// Ajouter les transformations Uploadcare si pas présentes
+			if (thumbUrl.includes('ucarecd.net') && !thumbUrl.includes('-/')) {
+				thumbUrl = thumbUrl.replace(/\/$/, '');
+				thumbUrl += '/-/preview/400x400/';
+			}
+			
+			if (fullUrl.includes('ucarecd.net') && !fullUrl.includes('-/')) {
+				fullUrl = fullUrl.replace(/\/$/, '');
+				fullUrl += '/-/preview/1000x1000/';
+			}
+
+			const item = document.createElement('div');
+			item.className = 'gallery-item';
+			item.innerHTML = `
+				<img src="${thumbUrl}" alt="${photo.name || 'Photo'}" loading="lazy" onerror="this.src='${fullUrl}'">
+				<div class="gallery-item-overlay">
+					${photo.date || ''}
+				</div>
+			`;
+			item.addEventListener('click', () => openLightbox(index, fullUrl));
+			galleryGrid.appendChild(item);
+		});		
 
         // Initialiser la galerie
         //renderGallery();
@@ -2243,19 +2186,19 @@
 						photos = json.table.rows.map(row => ({
 							id: row.c[0]?.v || '',
 							src: row.c[1]?.v || '',
-							thumb: row.c[2]?.v || '',
-							name: row.c[3]?.v || '',
+							thumb: row.c[2]?.v || row.c[1]?.v || '',
+							name: row.c[3]?.v || 'Photo',
 							date: row.c[4]?.v || ''
 						}));
 					}
-					console.log('Photos chargées:', photos);
 				} catch (error) {
 					console.error('Erreur chargement photos:', error);
+					photos = [];
 				}
 			}
-			
-			renderGallery();
-		}		
+		
+		renderGallery();
+	}
     </script>
 </body>
 </html>
