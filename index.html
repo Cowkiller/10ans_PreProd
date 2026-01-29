@@ -1206,7 +1206,7 @@
             <li><a href="#histoire">Notre Histoire</a></li>
             <li><a href="#infos">Infos Pratiques</a></li>
             <li><a href="#inscription">S'inscrire</a></li>
-            <li><a href="#photos">Photos</a></li>
+            <!-- <li><a href="#photos">Photos</a></li>-->
             <li><a href="#activites">Activités</a></li>
             <li><a href="#hebergements">Hébergements</a></li>
             <li><a href="#contact">Contact</a></li>
@@ -1485,14 +1485,14 @@
     </section>
 
     <!-- Section Photos -->
-    <section id="photos">
+    <!-- <section id="photos">
         <h2>📸 Album Photo Partagé</h2>
         
         <p class="photos-intro">
             Partagez vos plus beaux souvenirs de la journée ! Toutes les photos seront visibles par tous les invités.
         </p>
 
-        <!-- Zone d'upload -->
+
         <div class="upload-zone" id="upload-zone">
             <div class="upload-icon">📷</div>
             <h3>Déposez vos photos ici</h3>
@@ -1508,19 +1508,17 @@
             </div>
         </div>
 
-        <!-- Galerie -->
         <div class="gallery-container">
             <h3 class="gallery-title">🖼️ Galerie des invités</h3>
             
             <div class="gallery-grid" id="gallery-grid">
-                <!-- Les photos seront ajoutées dynamiquement ici -->
                 <div class="gallery-empty" id="gallery-empty">
                     <div class="gallery-empty-icon">📷</div>
                     <p>Aucune photo pour l'instant...<br>Soyez le premier à partager !</p>
                 </div>
             </div>
         </div>
-    </section>
+    </section>-->
 
     <!-- Lightbox pour les photos -->
     <div class="lightbox" id="lightbox">
@@ -1761,7 +1759,7 @@
         // ============================================
         // JAUGE DE RÉPONSES
         // ============================================
-        async function updateResponseCount() {
+        /*async function updateResponseCount() {
             // Si pas de Google Sheets configuré, utiliser une valeur de démo
             if (!CONFIG.GOOGLE_SHEETS_URL) {
                 // Valeur de démonstration
@@ -1782,7 +1780,33 @@
                 // Fallback: afficher 0
                 updateProgressBar(0);
             }
-        }
+        }*/
+		async function updateResponseCount() {
+			if (!CONFIG.GOOGLE_SHEETS_URL) {
+				updateProgressBar(0);
+				return;
+			}
+
+			try {
+				// Utiliser un proxy CORS ou JSONP
+				const sheetId = '1xOgKsgV4pBd-UwbPzwJhsKRS3eI9F_OQRdXSQBq67u0';
+				const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+				
+				const response = await fetch(url);
+				const text = await response.text();
+				
+				// Google renvoie du JSONP, on extrait le JSON
+				const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+				if (jsonString && jsonString[1]) {
+					const json = JSON.parse(jsonString[1]);
+					const rowCount = json.table.rows.length;
+					updateProgressBar(rowCount);
+				}
+			} catch (error) {
+				console.log('Erreur jauge:', error);
+				updateProgressBar(0);
+			}
+		}		
 
         function updateProgressBar(count) {
             const percentage = Math.min((count / CONFIG.TOTAL_EXPECTED_RESPONSES) * 100, 100);
